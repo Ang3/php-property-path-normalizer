@@ -2,7 +2,7 @@
 
 namespace Ang3\Component\Serializer\Normalizer\Tests;
 
-use Ang3\Component\Serializer\Normalizer\PayloadNormalizer;
+use Ang3\Component\Serializer\Normalizer\PropertyPathNormalizer;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -15,10 +15,10 @@ use Symfony\Component\Serializer\Serializer;
 /**
  * @author Joanis ROUANET
  */
-class PayloadNormalizerTest extends TestCase
+class PropertyPathNormalizerTest extends TestCase
 {
     /**
-     * @var PayloadNormalizer
+     * @var PropertyPathNormalizer
      */
     private $normalizer;
 
@@ -35,7 +35,7 @@ class PayloadNormalizerTest extends TestCase
     public function setUp(): void
     {
         $this->propertyAccessor = $this->createMock(PropertyAccessor::class);
-        $this->normalizer = new PayloadNormalizer([], $this->propertyAccessor);
+        $this->normalizer = new PropertyPathNormalizer([], $this->propertyAccessor);
         $this->serializer = $this->createMock(Serializer::class);
         $this->normalizer->setSerializer($this->serializer);
     }
@@ -94,7 +94,7 @@ class PayloadNormalizerTest extends TestCase
     	];
 
     	$context = [
-    		'attributes' => $data
+    		PropertyPathNormalizer::PROPERTY_MAPPING_KEY => $data
     	];
 
     	$this->serializer->expects($this->once())->method('normalize')->with($data, null, [])->willReturn($data);
