@@ -99,7 +99,7 @@ dump($data);
 
 Of course, you can directly create your serializer with this normalizer and others normalizers but you must take care about the order of normalizers.
 
-Last but not least, if **no property are mapped** (be careful about optional default context) this normalizer will try to forward the normalization process to the serializer while preventing possible circular support checkings. In this case, if the serializer does not support the normalization of whole data, am empty array is returned.
+Last but not least, if **no property are mapped** (be careful about optional default context) this normalizer will try to forward the normalization process to the serializer while preventing possible circular support checkings. In case of the serializer does not support whole data, an empty array is returned. You can disable this fallback normalization in the context.
 
 **Context parameters**
 
