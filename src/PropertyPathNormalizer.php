@@ -25,17 +25,17 @@ class PropertyPathNormalizer implements NormalizerInterface, SerializerAwareInte
     /**
      * Flag to control whether the mapped property value is the normalized path.
      */
-    const VALUE_AS_NORMALIZED_PATH_KEY = 'value_as_normalized_path';
+    const VALUE_AS_NORMALIZED_PATH_KEY = 'property_path_value_as_normalized_path';
 
     /**
      * Flag to control whether data must be normalized by the serializer if no property mapped.
      */
-    const FALLBACK_NORMALIZATION = 'fallback_normalization';
+    const FALLBACK_NORMALIZATION = 'property_path_fallback_normalization';
 
     /**
      * Flag to control whether each property value must be normalized.
      */
-    const PROPERTY_VALUE_NORMALIZATION = 'property_value_normalization';
+    const PROPERTY_VALUE_NORMALIZATION = 'property_path_value_normalization';
 
     /**
      * @var PropertyAccessorInterface

@@ -2,19 +2,12 @@
 
 namespace Ang3\Component\Serializer\Normalizer\Tests;
 
-use DateTime;
 use Ang3\Component\Serializer\Normalizer\PropertyPathNormalizer;
-use Ang3\Component\Serializer\Normalizer\Tests\Model\TestRecord;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
-use Symfony\Component\Serializer\Exception\RuntimeException;
-use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
-use Symfony\Component\Serializer\Normalizer\DateTimeZoneNormalizer;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
-use Exception;
 
 /**
  * @author Joanis ROUANET
@@ -90,39 +83,30 @@ class PropertyPathNormalizerTest extends TestCase
     {
         $data = [
             'foo' => 'bar',
-            'bar' => 'baz'
+            'bar' => 'baz',
         ];
 
-    	$context = [
+        $context = [
             PropertyPathNormalizer::PROPERTY_MAPPING_KEY => [
                 '[foo]' => 'bar',
-                '[bar]' => 'baz'
-            ]
+                '[bar]' => 'baz',
+            ],
         ];
 
-    	$attributeValue = 'qux';
+        $attributeValue = 'qux';
 
-    	$this->propertyAccessor
+        $this->propertyAccessor
             ->expects($this->exactly(2))
             ->method('isReadable')
             ->withConsecutive([$data, '[foo]'], [$data, '[bar]'])
             ->willReturnOnConsecutiveCalls(true, true)
         ;
-
         $this->propertyAccessor
             ->expects($this->exactly(2))
             ->method('getValue')
             ->withConsecutive([$data, '[foo]'], [$data, '[bar]'])
             ->willReturnOnConsecutiveCalls($attributeValue, $attributeValue)
         ;
-
-        $this->propertyAccessor
-            ->expects($this->exactly(2))
-            ->method('isWritable')
-            ->withConsecutive([[], '[bar]'], [[], '[baz]'])
-            ->willReturnOnConsecutiveCalls(true, true)
-        ;
-
         $this->propertyAccessor
             ->expects($this->exactly(2))
             ->method('setValue')
@@ -139,14 +123,14 @@ class PropertyPathNormalizerTest extends TestCase
     {
         $data = (object) [
             'foo' => 'bar',
-            'bar' => 'baz'
+            'bar' => 'baz',
         ];
 
         $context = [
             PropertyPathNormalizer::PROPERTY_MAPPING_KEY => [
                 'foo' => 'bar',
-                'bar' => 'baz'
-            ]
+                'bar' => 'baz',
+            ],
         ];
 
         $attributeValue = 'qux';
@@ -157,21 +141,12 @@ class PropertyPathNormalizerTest extends TestCase
             ->withConsecutive([$data, 'foo'], [$data, 'bar'])
             ->willReturnOnConsecutiveCalls(true, true)
         ;
-
         $this->propertyAccessor
             ->expects($this->exactly(2))
             ->method('getValue')
             ->withConsecutive([$data, 'foo'], [$data, 'bar'])
             ->willReturnOnConsecutiveCalls($attributeValue, $attributeValue)
         ;
-
-        $this->propertyAccessor
-            ->expects($this->exactly(2))
-            ->method('isWritable')
-            ->withConsecutive([[], '[bar]'], [[], '[baz]'])
-            ->willReturnOnConsecutiveCalls(true, true)
-        ;
-
         $this->propertyAccessor
             ->expects($this->exactly(2))
             ->method('setValue')
@@ -187,7 +162,7 @@ class PropertyPathNormalizerTest extends TestCase
     public function testNormalizeWithNoReadableValue(): void
     {
         $data = (object) [
-            'foo' => 'bar'
+            'foo' => 'bar',
         ];
 
         $this->propertyAccessor
@@ -203,8 +178,8 @@ class PropertyPathNormalizerTest extends TestCase
 
         $this->normalizer->normalize($data, null, [
             PropertyPathNormalizer::PROPERTY_MAPPING_KEY => [
-                'foo' => 'bar'
-            ]
+                'foo' => 'bar',
+            ],
         ]);
     }
 }

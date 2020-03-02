@@ -76,6 +76,8 @@ In case of no mapped property, if the fallback normalization is disabled or the 
 **Context parameters**
 
 - ```property_path_mapping``` [default: ```[]```] list of mapped property paths
-- ```value_as_normalized_path``` [default: ```true```] set to ```false``` to reverse normalized/denormalized path of context
-- ```fallback_normalization``` [default: ```true```] set to ```false``` to disable the fallback normalization in case of no mapped property
-- ```property_value_normalization``` [default: ```true```] set to ```false``` to disable the normalization of property values
+- ```property_path_value_as_normalized_path``` [default: ```true```] set to ```false``` to reverse normalized/denormalized path of context
+- ```property_path_fallback_normalization``` [default: ```true```] set to ```false``` to disable the fallback normalization in case of no mapped property
+- ```property_path_value_normalization``` [default: ```true```] set to ```false``` to disable the normalization of property values
+
+**Good to know:** if the normalization is forwarded, all parameters of this normalizer are automatically removed from the forwarded context.
