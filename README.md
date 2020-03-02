@@ -60,46 +60,16 @@ dump($data);
  */
 ```
 
+To normalize objects like a date, you must inject a serializer instance with the method ```setSerializer(SerializerInterface $serializer)``` or construct your serializer by including this normalizer at the top of object/array normalizers. You can see an example in file [```examples/basic_example.php```](https://github.com/Ang3/php-property-path-normalizer/blob/master/examples/basic_example.php).
+
 - If a property cannot be read from data, its value is normalized as ```null```
 - If a property cannot be write in normalized array, a ```Symfony\Component\Serializer\Exception\RuntimeException``` is thrown
 
 **Good to know:** all target property paths are *automatically* converted for array support (i.e. ```foo.bar[0]``` is automatically normalized to ```[foo][bar][0]```).
 
-To normalize objects like a date, you must inject a serializer instance with the method ```setSerializer(SerializerInterface $serializer)``` or construct your serializer by including this normalizer at the top of object/array normalizers.
+Last but not least, if **no property are mapped** (be careful about optional default context) this normalizer will try to forward the normalization process to the serializer while preventing possible circular support checkings. You can disable this fallback normalization in the context.
 
-```php
-//...
-use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
-use Symfony\Component\Serializer\Normalizer\DateTimeZoneNormalizer;
-
-$normalizer = new PropertyPathNormalizer($defaultContext);
-$normalizer->setSerializer(new Serializer([
-	new DateTimeNormalizer,
-	new DateTimeZoneNormalizer,
-]));
-
-// ...
-
-$data = $serializer->normalize($myRecord, null, $normalizationContext);
-dump($data);
-
-/*
- * Output:
- * array:1 [
- *   "data" => array:1 [
- *    0 => array:3 [
- *       "foo" => "bar"
- *       "bar" => 123
- *       "baz" => "2020-03-02T11:18:06+01:00"
- *     ]
- *   ]
- * ]
- */
-```
-
-Of course, you can directly create your serializer with this normalizer and others normalizers but you must take care about the order of normalizers.
-
-Last but not least, if **no property are mapped** (be careful about optional default context) this normalizer will try to forward the normalization process to the serializer while preventing possible circular support checkings. In case of the serializer does not support whole data, an empty array is returned. You can disable this fallback normalization in the context.
+In case of no mapped property, if the fallback normalization is disabled or the serializer does not support whole data, an empty array is returned.
 
 **Context parameters**
 
