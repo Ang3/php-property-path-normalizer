@@ -9,11 +9,12 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
-use Symfony\Component\Serializer\Exception\LogicException;
+use Symfony\Component\Serializer\Exception\RuntimeException;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Serializer\Normalizer\DateTimeZoneNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
+use Exception;
 
 /**
  * @author Joanis ROUANET
@@ -92,14 +93,12 @@ class PropertyPathNormalizerTest extends TestCase
             'bar' => 'baz'
         ];
 
-    	$context = $this->getFakeContext();
-
-    	$this->serializer
-            ->expects($this->once())
-            ->method('normalize')
-            ->with($data, null, [])
-            ->willReturn($data)
-        ;
+    	$context = [
+            PropertyPathNormalizer::PROPERTY_MAPPING_KEY => [
+                '[foo]' => 'bar',
+                '[bar]' => 'baz'
+            ]
+        ];
 
     	$attributeValue = 'qux';
 
@@ -138,129 +137,74 @@ class PropertyPathNormalizerTest extends TestCase
      */
     public function testNormalizeStdClass(): void
     {
-        $data = [
+        $data = (object) [
             'foo' => 'bar',
             'bar' => 'baz'
         ];
 
-        $context = $this->getFakeContext();
-
-        $this->serializer
-            ->expects($this->once())
-            ->method('normalize')
-            ->with($data, null, [])
-            ->willReturn($data)
-        ;
-
-        $attributeValue = 'qux';
-
-        $this->propertyAccessor
-            ->expects($this->exactly(2))
-            ->method('isReadable')
-            ->withConsecutive([$data, '[foo]'], [$data, '[bar]'])
-            ->willReturnOnConsecutiveCalls(true, true)
-        ;
-
-        $this->propertyAccessor
-            ->expects($this->exactly(2))
-            ->method('getValue')
-            ->withConsecutive([$data, '[foo]'], [$data, '[bar]'])
-            ->willReturnOnConsecutiveCalls($attributeValue, $attributeValue)
-        ;
-
-        $this->propertyAccessor
-            ->expects($this->exactly(2))
-            ->method('isWritable')
-            ->withConsecutive([[], '[bar]'], [[], '[baz]'])
-            ->willReturnOnConsecutiveCalls(true, true)
-        ;
-
-        $this->propertyAccessor
-            ->expects($this->exactly(2))
-            ->method('setValue')
-            ->withConsecutive([[], '[bar]', $attributeValue], [[], '[baz]', $attributeValue])
-        ;
-
-        $this->assertIsArray($this->normalizer->normalize((object) $data, null, $context));
-    }
-
-    /**
-     * @covers ::normalize
-     */
-    public function testNormalizeObject(): void
-    {
-        $object = new TestRecord;
-
-        $data = [
-            'foo' => 'bar',
-            'bar' => 'baz'
-        ];
-
-        $context = $this->getFakeContext();
-
-        $this->serializer
-            ->expects($this->once())
-            ->method('normalize')
-            ->with($object, null, [])
-            ->willReturn($data)
-        ;
-
-        $attributeValue = 'qux';
-
-        $this->propertyAccessor
-            ->expects($this->exactly(2))
-            ->method('isReadable')
-            ->withConsecutive([$data, '[foo]'], [$data, '[bar]'])
-            ->willReturnOnConsecutiveCalls(true, true)
-        ;
-
-        $this->propertyAccessor
-            ->expects($this->exactly(2))
-            ->method('getValue')
-            ->withConsecutive([$data, '[foo]'], [$data, '[bar]'])
-            ->willReturnOnConsecutiveCalls($attributeValue, $attributeValue)
-        ;
-
-        $this->propertyAccessor
-            ->expects($this->exactly(2))
-            ->method('isWritable')
-            ->withConsecutive([[], '[bar]'], [[], '[baz]'])
-            ->willReturnOnConsecutiveCalls(true, true)
-        ;
-
-        $this->propertyAccessor
-            ->expects($this->exactly(2))
-            ->method('setValue')
-            ->withConsecutive([[], '[bar]', $attributeValue], [[], '[baz]', $attributeValue])
-        ;
-
-        $this->assertIsArray($this->normalizer->normalize($object, null, $context));
-    }
-
-    /**
-     * @covers ::normalize
-     */
-    public function testNormalizeFailedWithNoSerializer(): void
-    {
-        // Cration d'un normaliseur sans sérialiseur
-        $normalizer = new PropertyPathNormalizer();
-        $serializer = $this->createMock(Serializer::class);
-
-        $this->expectException(LogicException::class);
-
-        $normalizer->normalize(new TestRecord, null, $this->getFakeContext());
-    }
-
-    /**
-     * @internal
-     */
-    private function getFakeContext(): array
-    {
-        return [
+        $context = [
             PropertyPathNormalizer::PROPERTY_MAPPING_KEY => [
                 'foo' => 'bar',
                 'bar' => 'baz'
             ]
         ];
+
+        $attributeValue = 'qux';
+
+        $this->propertyAccessor
+            ->expects($this->exactly(2))
+            ->method('isReadable')
+            ->withConsecutive([$data, 'foo'], [$data, 'bar'])
+            ->willReturnOnConsecutiveCalls(true, true)
+        ;
+
+        $this->propertyAccessor
+            ->expects($this->exactly(2))
+            ->method('getValue')
+            ->withConsecutive([$data, 'foo'], [$data, 'bar'])
+            ->willReturnOnConsecutiveCalls($attributeValue, $attributeValue)
+        ;
+
+        $this->propertyAccessor
+            ->expects($this->exactly(2))
+            ->method('isWritable')
+            ->withConsecutive([[], '[bar]'], [[], '[baz]'])
+            ->willReturnOnConsecutiveCalls(true, true)
+        ;
+
+        $this->propertyAccessor
+            ->expects($this->exactly(2))
+            ->method('setValue')
+            ->withConsecutive([[], '[bar]', $attributeValue], [[], '[baz]', $attributeValue])
+        ;
+
+        $this->assertIsArray($this->normalizer->normalize($data, null, $context));
+    }
+
+    /**
+     * @covers ::normalize
+     */
+    public function testNormalizeWithNoReadableValue(): void
+    {
+        $data = (object) [
+            'foo' => 'bar'
+        ];
+
+        $this->propertyAccessor
+            ->expects($this->once())
+            ->method('isReadable')
+            ->with($data, 'foo')
+            ->willReturn(false)
+        ;
+        $this->propertyAccessor
+            ->expects($this->never())
+            ->method('getValue')
+        ;
+
+        $this->normalizer->normalize($data, null, [
+            PropertyPathNormalizer::PROPERTY_MAPPING_KEY => [
+                'foo' => 'bar'
+            ]
+        ]);
     }
 }

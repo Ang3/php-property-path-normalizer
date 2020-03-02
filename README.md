@@ -2,9 +2,9 @@
 
 [![Build Status](https://travis-ci.org/Ang3/php-property-path-normalizer.svg?branch=master)](https://travis-ci.org/Ang3/php-property-path-normalizer) [![Latest Stable Version](https://poser.pugx.org/ang3/php-property-path-normalizer/v/stable)](https://packagist.org/packages/ang3/php-property-path-normalizer) [![Latest Unstable Version](https://poser.pugx.org/ang3/php-property-path-normalizer/v/unstable)](https://packagist.org/packages/ang3/php-property-path-normalizer) [![Total Downloads](https://poser.pugx.org/ang3/php-property-path-normalizer/downloads)](https://packagist.org/packages/ang3/php-property-path-normalizer)
 
-This normalizer is a basic property mapper. Its helps you to normalize/denormalize specific data by passing mapping in context. It was developed to work with the component "Serializer" of Symfony. Please read the [documentation](https://symfony.com/doc/current/components/serializer.html) of the component to know more information about serializer usage.
+This normalizer was developed to work with the component "Serializer" of Symfony. Please read the [documentation](https://symfony.com/doc/current/components/serializer.html) of the component to know more information about serializer usage.
 
-
+This normalizer helps you to map specific data by property paths into structured array: **it does not modify values**. To do that, you must inject a serializer instance with the method ```setSerializer(SerializerInterface $serializer)``` or construct your serializer by including this normalizer at the top of object normalizers. Then this normalizer will try automatically to normalize the value if supported by the serializer. No worry about circular normalizations.
 
 ## Installation
 
@@ -16,57 +16,68 @@ If you install this component outside of a Symfony application, you must require
 
 ## Usage
 
-**Basic usage**
+All the logic resides in the context. it contains the mapping of properties.
 
-Here is the content of file ```examples/basic_example.php```:
+In this first example below, the instance of ```\DateTime``` will be not normalized because no serializer has been injected to support its normalization.
 
 ```php
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once 'vendor/autoload.php';
 
-use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 use Ang3\Component\Serializer\Normalizer\PropertyPathNormalizer;
-use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
-use Symfony\Component\Serializer\Normalizer\DateTimeZoneNormalizer;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
-use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 
-// Create the serializer
-$serializer = new Serializer([
-  new DateTimeNormalizer,
-  new DateTimeZoneNormalizer,
-  new PropertyPathNormalizer,
-  new ObjectNormalizer(null, null, null, new ReflectionExtractor()),
-]);
+// Create the normalizer
+$normalizer = new PropertyPathNormalizer($defaultContext = []);
 
-/**
- * Example record
- */
-
+// Fake data record
 $myRecord = new \stdClass;
 $myRecord->foo = 'bar';
 $myRecord->bar = 123;
 $myRecord->baz = new DateTime;
 
-echo "\n". 'Initial record: ' . "\n";
-dump($myRecord);
-
-/**
- * Data normalization
- */
-
-echo "\n". 'Normalization context: ' . "\n";
+// Define the context and your mapping
 $normalizationContext = [
   PropertyPathNormalizer::PROPERTY_MAPPING_KEY => [
-    'foo' => 'data[0].foo',
+    'foo' => 'data[0].foo', // By default, the key is the "source" and the value the "target"
     'bar' => 'data[0].bar',
     'baz' => 'data[0].baz'
   ]
 ];
-dump($normalizationContext);
 
-echo "\n". 'Normalized data: ' . "\n";
+$data = $serializer->normalize($myRecord, null, $normalizationContext);
+dump($data);
+
+/*
+ * Output:
+ * array:1 [
+ *   "data" => array:1 [
+ *    0 => array:3 [
+ *       "foo" => "bar"
+ *       "bar" => 123
+ *       "baz" => object: DateTime
+ *     ]
+ *   ]
+ * ]
+ */
+```
+
+To normalize objects like a date, you have to inject a serializer which supports data normalization.
+
+```php
+// ...
+
+use Ang3\Component\Serializer\Normalizer\PropertyPathNormalizer;
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
+use Symfony\Component\Serializer\Normalizer\DateTimeZoneNormalizer;
+
+$normalizer = new PropertyPathNormalizer($defaultContext);
+$normalizer->setSerializer(new Serializer([
+	new DateTimeNormalizer,
+	new DateTimeZoneNormalizer,
+]));
+
+// ...
+
 $data = $serializer->normalize($myRecord, null, $normalizationContext);
 dump($data);
 
@@ -82,61 +93,15 @@ dump($data);
  *   ]
  * ]
  */
-
-/**
- * Data denormalization
- */
-
-class FooClass
-{
-  public $foo;
-  public $bar;
-  /**
-   * @var DateTimeInterface
-   */
-  private $baz;
-
-  public function setBaz(DateTimeInterface $baz)
-  {
-    $this->baz = $baz;
-  }
-}
-
-echo "\n". 'Denormalization context: ' . "\n";
-$denormalizationContext = [
-  PropertyPathNormalizer::VALUE_AS_NORMALIZED_PATH_KEY => false,
-  PropertyPathNormalizer::PROPERTY_MAPPING_KEY => [
-    'foo' => 'data[0].foo',
-    'bar' => 'data[0].bar',
-    'baz' => 'data[0].baz'
-  ]
-];
-dump($denormalizationContext);
-
-echo "\n". 'Denormalized data: ' . "\n";
-$record = $serializer->denormalize($data, FooClass::class, null, $denormalizationContext);
-dump($record);
-
-/*
- * Output:
- * FooClass^ {#24
- *  +foo: "bar"
- *  +bar: 123
- *  -baz: DateTimeImmutable @1583144286 {#38
- *    date: 2020-03-02 11:18:06.0 +01:00
- *  }
- *}
- */
-
 ```
 
-All the logic resides in the context.
+Of course, you can directly create your serializer with this normalizer and others normalizers but you must take care about the order of normalizers. 
+
+Last but not least, if **no property are mapped** (be careful about optional default context) this normalizer will try to forward the normalization process to the serializer while preventing possible circular checking.
 
 **Context parameters**
 
-The composer tries to normalize from the serializer, then it maps attributes from normalized value to the target array.
-
-- ```property_mapping``` [default: ```[]```] list of mapped property paths
-- ```value_as_normalized_path``` [default: ```true```] Set to ```false``` to reverse normalized/denormalized path of context
-- ```normalization``` [default: ```[]```] specific context for data normalization process
-- ```denormalization``` [default: ```[]```] specific context for data denormalization process
+- ```property_path_mapping``` [default: ```[]```] list of mapped property paths
+- ```value_as_normalized_path``` [default: ```true```] set to ```false``` to reverse normalized/denormalized path of context
+- ```fallback_normalization``` [default: ```true```] set to ```false``` to disable the fallback normalization in case of no mapped property
+- ```property_value_normalization``` [default: ```true```] set to ```false``` to disable the normalization of property values

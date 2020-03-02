@@ -37,10 +37,12 @@ dump($myRecord);
 
 echo "\n". 'Normalization context: ' . "\n";
 $normalizationContext = [
+	PropertyPathNormalizer::PROPERTY_VALUE_NORMALIZATION => false,
 	PropertyPathNormalizer::PROPERTY_MAPPING_KEY => [
-		'foo' => 'data[0].foo',
-		'bar' => 'data[0].bar',
-		'baz' => 'data[0].baz'
+		// 'foo' => 'data[0].foo',
+		// 'bar' => 'data[0].bar',
+		// 'baz' => 'data[0].baz',
+		// 'qux' => 'data[0].qux',
 	]
 ];
 dump($normalizationContext);
@@ -56,53 +58,9 @@ dump($data);
  *    0 => array:3 [
  *       "foo" => "bar"
  *       "bar" => 123
- *       "baz" => "2020-03-02T11:18:06+01:00"
+ *       "baz" => "2020-03-02T11:18:06+01:00",
+ *       "qux" => null
  *     ]
  *   ]
  * ]
- */
-
-/**
- * Data denormalization
- */
-
-class FooClass
-{
-	public $foo;
-	public $bar;
-	/**
-	 * @var DateTimeInterface
-	 */
-	private $baz;
-
-	public function setBaz(DateTimeInterface $baz)
-	{
-		$this->baz = $baz;
-	}
-}
-
-echo "\n". 'Denormalization context: ' . "\n";
-$denormalizationContext = [
-	PropertyPathNormalizer::VALUE_AS_NORMALIZED_PATH_KEY => false,
-	PropertyPathNormalizer::PROPERTY_MAPPING_KEY => [
-		'foo' => 'data[0].foo',
-		'bar' => 'data[0].bar',
-		'baz' => 'data[0].baz'
-	]
-];
-dump($denormalizationContext);
-
-echo "\n". 'Denormalized data: ' . "\n";
-$record = $serializer->denormalize($data, FooClass::class, null, $denormalizationContext);
-dump($record);
-
-/*
- * Output:
- * FooClass^ {#24
- *  +foo: "bar"
- *  +bar: 123
- *  -baz: DateTimeImmutable @1583144286 {#38
- *    date: 2020-03-02 11:18:06.0 +01:00
- *  }
- *}
  */
