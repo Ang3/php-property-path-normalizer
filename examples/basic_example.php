@@ -16,7 +16,6 @@ $serializer = new Serializer([
 	new DateTimeNormalizer,
 	new DateTimeZoneNormalizer,
 	new PropertyPathNormalizer,
-	new ObjectNormalizer(null, null, null, new ReflectionExtractor()),
 ]);
 
 /**
@@ -39,10 +38,10 @@ echo "\n". 'Normalization context: ' . "\n";
 $normalizationContext = [
 	PropertyPathNormalizer::PROPERTY_VALUE_NORMALIZATION => false,
 	PropertyPathNormalizer::PROPERTY_MAPPING_KEY => [
-		// 'foo' => 'data[0].foo',
-		// 'bar' => 'data[0].bar',
-		// 'baz' => 'data[0].baz',
-		// 'qux' => 'data[0].qux',
+		'foo' => 'data[0].foo',
+		'bar' => 'data[0].bar',
+		'baz' => 'data[0].baz',
+		'qux' => 'data[0].qux',
 	]
 ];
 dump($normalizationContext);
