@@ -135,15 +135,15 @@ class PropertyPathNormalizer implements NormalizerInterface, DenormalizerInterfa
         // Fusion du contexte par défaut et celui reçu en paramètre
         $context = array_merge($this->defaultContext, $context);
 
+        // Si pas de normaliseur
+        if (!$this->serializer instanceof NormalizerInterface) {
+            throw new LogicException('Cannot normalize data because the injected serializer is not a normalizer');
+        }
+
         // S'il s'agit d'un objet standard
         if ($data instanceof stdClass) {
             // Convertion de l'objet en tableau
             $data = get_object_vars($data);
-        }
-
-        // Si pas de normaliseur
-        if (!$this->serializer instanceof NormalizerInterface) {
-            throw new LogicException('Cannot normalize data because the injected serializer is not a normalizer');
         }
 
         // On signale que nous sommes en train de normaliser
