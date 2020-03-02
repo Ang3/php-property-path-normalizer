@@ -2,14 +2,10 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 use Ang3\Component\Serializer\Normalizer\PropertyPathNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Serializer\Normalizer\DateTimeZoneNormalizer;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
-use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 
 // Create the serializer
 $serializer = new Serializer([
