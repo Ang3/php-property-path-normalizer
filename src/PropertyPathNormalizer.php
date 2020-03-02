@@ -152,12 +152,6 @@ class PropertyPathNormalizer implements NormalizerInterface, SerializerAwareInte
                     throw new RuntimeException(sprintf('Failed to read data value "%s"', $sourcePath), 0, $e);
                 }
 
-                // Si la propriété ne peut pas être
-                if (!$this->propertyAccessor->isWritable($normalized, $targetPath)) {
-                    // Propriété suivante
-                    continue;
-                }
-
                 // Si on souhaite normaliser les valeurs des propriétés
                 if (true === $options[self::PROPERTY_VALUE_NORMALIZATION]) {
                     // Si on un sérialiseur qui peut normaliser

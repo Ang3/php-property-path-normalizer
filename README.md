@@ -60,8 +60,8 @@ dump($data);
  */
 ```
 
-- If a proeprty cannot be read from data, its value is normalized as ```null```
-- If a property cannot be write in normalized array, a ```Symfony\Component\Serializer\Exception\LogicException``` is thrown
+- If a property cannot be read from data, its value is normalized as ```null```
+- If a property cannot be write in normalized array, a ```Symfony\Component\Serializer\Exception\RuntimeException``` is thrown
 
 **Good to know:** all target property paths are *automatically* converted for array support (i.e. ```foo.bar[0]``` is automatically normalized to ```[foo][bar][0]```).
 
