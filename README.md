@@ -32,7 +32,7 @@ $normalizer = new PropertyPathNormalizer($defaultContext = []);
 $myRecord = new \stdClass;
 $myRecord->foo = 'bar';
 $myRecord->bar = 123;
-$myRecord->baz = new DateTime;
+$myRecord->baz = new \DateTime;
 
 // Define the context and your mapping
 $normalizationContext = [
@@ -54,7 +54,7 @@ dump($data);
  *    0 => array:3 [
  *       "foo" => "bar"
  *       "bar" => 123
- *       "baz" => object: DateTime,
+ *       "baz" => DateTime {#11}
  *       "qux" => null
  *     ]
  *   ]
@@ -62,7 +62,7 @@ dump($data);
  */
 ```
 
-To normalize objects like a date, you must inject a serializer instance with the method ```setSerializer(SerializerInterface $serializer)``` or construct your serializer by including this normalizer at the top of object/array normalizers. You can see an example in file [```examples/basic_example.php```](https://github.com/Ang3/php-property-path-normalizer/blob/master/examples/basic_example.php).
+To normalize no-scalar values, you must inject a serializer instance with the method ```setSerializer(SerializerInterface $serializer)``` or construct your serializer by including this normalizer at the top of object/array normalizers. You can see an example in file [```examples/basic_example.php```](https://github.com/Ang3/php-property-path-normalizer/blob/master/examples/basic_example.php).
 
 - If a property cannot be read from data, its value is normalized as ```null```
 - If a property cannot be write in normalized array, a ```Symfony\Component\Serializer\Exception\RuntimeException``` is thrown
