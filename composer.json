@@ -1,0 +1,33 @@
+{
+  "name": "ang3/php-data-normalizer",
+  "type": "library",
+  "homepage": "https://github.com/Ang3/php-data-normalizer",
+  "description": "PHP data normalizer",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Joanis Rouanet",
+      "homepage": "https://github.com/Ang3"
+    }
+  ],
+  "autoload": {
+    "psr-4": { "Ang3\\Component\\Serializer\\Normalizer\\": "src/" }
+  },
+  "autoload-dev": {
+    "psr-4": { "Ang3\\Component\\Serializer\\Normalizer\\Tests\\": "tests/" }
+  },
+  "require": {
+    "php": "^7.1",
+    "symfony/property-access": "^4.0 || ^5.0",
+    "symfony/serializer": "^4.0 || ^5.0"
+  },
+  "require-dev": {
+    "ang3/php-dev-binaries": "^1.0",
+    "symfony/var-dumper": "^4.0 || ^5.0",
+    "symfony/phpunit-bridge": "^4.0 || ^5.0",
+    "symfony/property-info": "^4.0 || ^5.0"
+  },
+  "config": {
+      "sort-packages": true
+  }
+}

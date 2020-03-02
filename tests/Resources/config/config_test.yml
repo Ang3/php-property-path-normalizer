@@ -1,0 +1,42 @@
+models:
+  sms_record:
+    path_prefix: null
+    properties:
+      id:
+        path: hash.test
+        required: true
+        #callback: intval
+        scale: 3
+        normalization:
+          factor: 100
+        denormalization:
+          factor: 0.01
+          type: float
+      type:
+        path: type
+        dictionary: 'Ang3\Component\Normalizer\Tests\Model\TestRecord::getDictionary'
+        dictionary_entry_type: value
+        nullable: false
+        denormalization:
+          dictionary_entry_type: key
+      to: to
+      from: from
+      text: text
+      mccMnc: network
+      smsCount:
+        path: parts
+      amount:
+        path: b_customer_debit
+        type: float
+        denormalization:
+          factor: 0.01
+      originalStatus: status
+      originalErrorMessage: status_error
+  identified_record:
+    path_prefix: null
+    parent: sms_record
+    properties:
+      id:
+        path: '[0]'
+        required: true
+        nullable: false
