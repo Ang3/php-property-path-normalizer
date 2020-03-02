@@ -21,8 +21,6 @@ If you install this component outside of a Symfony application, you must require
 Here is the content of file ```examples/basic_example.php```:
 
 ```php
-<?php
-
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;

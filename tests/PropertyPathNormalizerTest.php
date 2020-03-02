@@ -97,34 +97,41 @@ class PropertyPathNormalizerTest extends TestCase
     		PropertyPathNormalizer::PROPERTY_MAPPING_KEY => $data
     	];
 
-    	$this->serializer->expects($this->once())->method('normalize')->with($data, null, [])->willReturn($data);
+    	$this->serializer
+            ->expects($this->once())
+            ->method('normalize')
+            ->with($data, null, [])
+            ->willReturn($data)
+        ;
 
     	$attributeValue = 'qux';
 
-    	$this->propertyAccessor->expects($this->exactly(2))->method('isReadable')->willReturn(true);
-    	$this->propertyAccessor->expects($this->exactly(2))->method('getValue')->willReturn($attributeValue);
-    	$this->propertyAccessor->expects($this->exactly(2))->method('isWritable')->willReturn(true);
-    	$this->propertyAccessor->expects($this->exactly(2))->method('setValue')->willReturn($attributeValue);
+    	$this->propertyAccessor
+            ->expects($this->exactly(2))
+            ->method('isReadable')
+            ->withConsecutive([$data, '[foo]'], [$data, '[bar]'])
+            ->willReturnOnConsecutiveCalls(true, true)
+        ;
 
-    	// /*
-    	//  * 'foo' mapping
-    	//  */
+        $this->propertyAccessor
+            ->expects($this->exactly(2))
+            ->method('getValue')
+            ->withConsecutive([$data, '[foo]'], [$data, '[bar]'])
+            ->willReturnOnConsecutiveCalls($attributeValue, $attributeValue)
+        ;
 
-     //    $this->propertyAccessor->expects($this->once())->method('isReadable')->with($data, '[foo]')->willReturn(true);
-     //    $this->propertyAccessor->expects($this->once())->method('getValue')->with($data, '[foo]')->willReturn($attributeValue);
-     //    $this->propertyAccessor->expects($this->once())->method('isWritable')->with([], '[bar]')->willReturn(true);
-     //    $this->propertyAccessor->expects($this->once())->method('setValue')->with([], '[bar]', $attributeValue);
+        $this->propertyAccessor
+            ->expects($this->exactly(2))
+            ->method('isWritable')
+            ->withConsecutive([[], '[bar]'], [[], '[baz]'])
+            ->willReturnOnConsecutiveCalls(true, true)
+        ;
 
-    	// /*
-    	//  * 'bar' mapping
-    	//  */
-    	
-     //    $this->propertyAccessor->expects($this->once())->method('isReadable')->with($data, '[bar]')->willReturn(true);
-     //    $this->propertyAccessor->expects($this->once())->method('getValue')->with($data, '[bar]')->willReturn($attributeValue);
-     //    $this->propertyAccessor->expects($this->once())->method('isWritable')->with([], '[baz]')->willReturn(true);
-     //    $this->propertyAccessor->expects($this->once())->method('setValue')->with([], '[baz]', $attributeValue);
-
-        // Normalization
+        $this->propertyAccessor
+            ->expects($this->exactly(2))
+            ->method('setValue')
+            ->withConsecutive([[], '[bar]', $attributeValue], [[], '[baz]', $attributeValue])
+        ;
 
         $this->assertIsArray($this->normalizer->normalize($data, null, $context));
     }
