@@ -4,6 +4,8 @@
 
 This normalizer is a basic property mapper. Its helps you to normalize/denormalize specific data by passing mapping in context. It was developed to work with the component "Serializer" of Symfony. Please read the [documentation](https://symfony.com/doc/current/components/serializer.html) of the component to know more information about serializer usage.
 
+
+
 ## Installation
 
 ```shell
@@ -15,6 +17,8 @@ If you install this component outside of a Symfony application, you must require
 ## Usage
 
 **Basic usage**
+
+Here is the content of file ```examples/basic_example.php```:
 
 ```php
 <?php
@@ -136,5 +140,5 @@ The composer tries to normalize from the serializer, then it maps attributes fro
 
 - ```property_mapping``` [default: ```[]```] list of mapped property paths
 - ```value_as_normalized_path``` [default: ```true```] Set to ```false``` to reverse normalized/denormalized path of context
-- ```normalization``` [default: ```[]```] specific context for normalization process
-- ```denormalization``` [default: ```[]```] specific context for denormalization process
+- ```normalization``` [default: ```[]```] specific context for data normalization process
+- ```denormalization``` [default: ```[]```] specific context for data denormalization process
