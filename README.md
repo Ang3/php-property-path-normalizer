@@ -39,7 +39,8 @@ $normalizationContext = [
   PropertyPathNormalizer::PROPERTY_MAPPING_KEY => [
     'foo' => 'data[0].foo', // By default, the key is the "source" and the value the "target"
     'bar' => 'data[0].bar',
-    'baz' => 'data[0].baz'
+    'baz' => 'data[0].baz',
+    'qux' => 'data[0].qux', // The source path "qux" is not valid in $myRecord
   ]
 ];
 
@@ -53,7 +54,8 @@ dump($data);
  *    0 => array:3 [
  *       "foo" => "bar"
  *       "bar" => 123
- *       "baz" => object: DateTime
+ *       "baz" => object: DateTime,
+ *       "qux" => null
  *     ]
  *   ]
  * ]
