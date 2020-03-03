@@ -1,7 +1,7 @@
 {
-  "name": "ang3/php-data-normalizer",
+  "name": "ang3/php-property-path-normalizer",
   "type": "library",
-  "homepage": "https://github.com/Ang3/php-data-normalizer",
+  "homepage": "https://github.com/Ang3/php-property-path-normalizer",
   "description": "Symfony normalizer to normalize data from property paths mapping into structured array",
     "keywords": ["symfony", "serializer", "normalizer", "property", "path", "mapping", "array"],
   "license": "MIT",
