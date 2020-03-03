@@ -2,11 +2,12 @@
   "name": "ang3/php-data-normalizer",
   "type": "library",
   "homepage": "https://github.com/Ang3/php-data-normalizer",
-  "description": "PHP data normalizer",
+  "description": "Symfony normalizer to normalize data from property paths mapping into structured array",
+    "keywords": ["symfony", "serializer", "normalizer", "property", "path", "mapping", "array"],
   "license": "MIT",
   "authors": [
     {
-      "name": "Joanis Rouanet",
+      "name": "Joanis ROUANET",
       "homepage": "https://github.com/Ang3"
     }
   ],

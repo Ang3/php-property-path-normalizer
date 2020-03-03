@@ -65,7 +65,7 @@ dump($data);
 To normalize no-scalar values, you must inject a serializer instance with the method ```setSerializer(SerializerInterface $serializer)``` or construct your serializer by including this normalizer at the top of object/array normalizers. You can see an example in file [```examples/basic_example.php```](https://github.com/Ang3/php-property-path-normalizer/blob/master/examples/basic_example.php).
 
 - If a property cannot be read from data, its value is normalized as ```null```
-- If a property cannot be write in normalized array, a ```Symfony\Component\Serializer\Exception\RuntimeException``` is thrown
+- If a property cannot be write in normalized array, a ```Symfony\Component\Serializer\Exception\LogicException``` is thrown
 
 **Good to know:** all target property paths are *automatically* converted for array support (i.e. ```foo.bar[0]``` is automatically normalized to ```[foo][bar][0]```).
 

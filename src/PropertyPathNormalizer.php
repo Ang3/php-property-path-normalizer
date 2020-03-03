@@ -4,6 +4,7 @@ namespace Ang3\Component\Serializer\Normalizer;
 
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
+use Symfony\Component\Serializer\Exception\LogicException;
 use Symfony\Component\Serializer\Exception\RuntimeException;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\SerializerAwareInterface;
@@ -81,6 +82,9 @@ class PropertyPathNormalizer implements NormalizerInterface, SerializerAwareInte
 
     /**
      * {@inheritdoc}.
+     *
+     * @throws RuntimeException when accessing to the value of source path failed
+     * @throws LogicException   when writing to normalized array failed
      */
     public function normalize($data, $format = null, array $context = [])
     {
@@ -149,7 +153,7 @@ class PropertyPathNormalizer implements NormalizerInterface, SerializerAwareInte
                     // Récupération de la valeur
                     $value = $this->propertyAccessor->getValue($data, $sourcePath);
                 } catch (Throwable $e) {
-                    throw new RuntimeException(sprintf('Failed to read data value "%s"', $sourcePath), 0, $e);
+                    throw new RuntimeException(sprintf('Failed to read data value "%s" - %s', $sourcePath, $e->getMessage()), 0, $e);
                 }
 
                 // Si on souhaite normaliser les valeurs des propriétés
@@ -161,12 +165,8 @@ class PropertyPathNormalizer implements NormalizerInterface, SerializerAwareInte
 
                         // Si le sérialiseur supporte la normalisation de la valeur
                         if ($this->serializer->supportsNormalization($value)) {
-                            try {
-                                // Normalisation de la valeur
-                                $value = $this->serializer->normalize($value, null, $context);
-                            } catch (Throwable $e) {
-                                throw new RuntimeException(sprintf('Failed to normalize the value of property "%s"', $sourcePath), 0, $e);
-                            }
+                            // Normalisation de la valeur
+                            $value = $this->serializer->normalize($value, null, $context);
                         }
 
                         // On signale qu'on a finit de normaliser
@@ -182,7 +182,7 @@ class PropertyPathNormalizer implements NormalizerInterface, SerializerAwareInte
                 // Enregistrement de la valeur sur le chemin cible
                 $this->propertyAccessor->setValue($normalized, $targetPath, $value);
             } catch (Throwable $e) {
-                throw new RuntimeException(sprintf('Failed to write value of source property "%s" in target property "%s"', $sourcePath, $targetPath), 0, $e);
+                throw new LogicException(sprintf('Failed to write value of property "%s" in target property "%s" - %s', $sourcePath, $targetPath, $e->getMessage()), 0, $e);
             }
         }
 
