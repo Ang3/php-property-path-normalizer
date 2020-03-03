@@ -1,48 +1,47 @@
 <?php
 
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__.'/../vendor/autoload.php';
 
 use Ang3\Component\Serializer\Normalizer\PropertyPathNormalizer;
-use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Serializer\Normalizer\DateTimeZoneNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
 // Create the serializer
 $serializer = new Serializer([
-	new DateTimeNormalizer,
-	new DateTimeZoneNormalizer,
-	new PropertyPathNormalizer,
+    new DateTimeNormalizer(),
+    new DateTimeZoneNormalizer(),
+    new PropertyPathNormalizer(),
 ]);
 
 /**
- * Example record
+ * Example record.
  */
-
-$myRecord = new \stdClass;
+$myRecord = new \stdClass();
 $myRecord->foo = 'bar';
 $myRecord->bar = 123;
-$myRecord->baz = new DateTime;
+$myRecord->baz = new DateTime();
 
-echo "\n". 'Initial record: ' . "\n";
+echo "\n".'Initial record: '."\n";
 dump($myRecord);
 
-/**
+/*
  * Data normalization
  */
 
-echo "\n". 'Normalization context: ' . "\n";
+echo "\n".'Normalization context: '."\n";
 $normalizationContext = [
-	PropertyPathNormalizer::PROPERTY_VALUE_NORMALIZATION => false,
-	PropertyPathNormalizer::PROPERTY_MAPPING_KEY => [
-		'foo' => 'data[0].foo',
-		'bar' => 'data[0].bar',
-		'baz' => 'data[0].baz',
-		'qux' => 'data[0].qux',
-	]
+    PropertyPathNormalizer::PROPERTY_VALUE_NORMALIZATION => false,
+    PropertyPathNormalizer::PROPERTY_MAPPING_KEY => [
+        'foo' => 'data[0].foo',
+        'bar' => 'data[0].bar',
+        'baz' => 'data[0].baz',
+        'qux' => 'data[0].qux',
+    ],
 ];
 dump($normalizationContext);
 
-echo "\n". 'Normalized data: ' . "\n";
+echo "\n".'Normalized data: '."\n";
 $data = $serializer->normalize($myRecord, null, $normalizationContext);
 dump($data);
 
